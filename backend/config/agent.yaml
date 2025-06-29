@@ -1,0 +1,9 @@
+llm_config:
+  tool_llm:
+    name: qwen2.5-coder:7b
+    provider: ollama
+    temperature: 0.3
+  vision_llm:
+    name: gemma3:4b
+    provider: ollama
+    temperature: 0.2
