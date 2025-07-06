@@ -1,10 +1,12 @@
 import type { ChatHistory } from "@/types/chat";
 import ReactMarkdown from 'react-markdown'
-import React, { useState } from "react";
+import React from "react";
 import { UploadButton } from "@/components/UploadButton";
 import { X } from "react-feather";
 import { SubmitButton } from "@/components/SubmitButton";
 import { NavBar } from "@/components/NavBar";
+import { useChatState } from "@/hooks/useChatState";
+import { useFileReader } from "@/hooks/useFileReader";
 
 
 type ChatProps = {
@@ -13,33 +15,29 @@ type ChatProps = {
 }
 
 export const Chat = ({ conversations, onSend }: ChatProps) => {
-    const [input, setInput] = useState("");
-    const [inputImagePreview, setInputImagePreview] = useState<string | null>(null);
-    const [chatImagePreview, setChatImagePreview] = useState<string | null>(null);
-    const [isTyping, setIsTyping] = useState(false);
+    const { state, actions } = useChatState();
+    const { readFile } = useFileReader();
 
     const handleFileSelect = (file: File) => {
-        const reader = new FileReader();
-        reader.onload = (e) => {
-            setInputImagePreview(e.target?.result as string);
-        };
-        reader.readAsDataURL(file);
+        readFile(file).then((result: string) => {
+            actions.setInputImagePreview(result);
+        });
     };
 
     const handleInputChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
-        setInput(e.target.value);
+        actions.setInput(e.target.value);
     };
 
     const handleSend = async (e: React.FormEvent) => {
         e.preventDefault();
-        if (!input.trim() && !inputImagePreview) return;
-        const currentInput = input;
-        const currentImage = inputImagePreview;
-        setInput("");
-        setInputImagePreview(null);
-        setIsTyping(true);
+        if (!state.input.trim() && !state.inputImagePreview) return;
+        const currentInput = state.input;
+        const currentImage = state.inputImagePreview;
+        actions.setInput("");
+        actions.setInputImagePreview(null);
+        actions.setIsTyping(true);
         await onSend({ text: currentInput, image: currentImage });
-        setIsTyping(false);
+        actions.setIsTyping(false);
     };
 
     const handlePaste = (e: React.ClipboardEvent<HTMLTextAreaElement>) => {
@@ -51,7 +49,7 @@ export const Chat = ({ conversations, onSend }: ChatProps) => {
                 if (file) {
                     const reader = new FileReader();
                     reader.onload = (event) => {
-                        setInputImagePreview(event.target?.result as string);
+                        actions.setInputImagePreview(event.target?.result as string);
                     };
                     reader.readAsDataURL(file);
                 }
@@ -64,17 +62,17 @@ export const Chat = ({ conversations, onSend }: ChatProps) => {
 
     return (
         <>
-        {chatImagePreview && (
-            <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70" onClick={() => setChatImagePreview(null)}>
+        {state.chatImagePreview && (
+            <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70" onClick={() => actions.setChatImagePreview(null)}>
                 <img
-                    src={chatImagePreview}
+                    src={state.chatImagePreview}
                     alt="preview-large"
                     className="max-h-[90vh] max-w-[90vw] rounded-lg shadow-2xl border-4 border-white"
                     onClick={e => e.stopPropagation()}
                 />
                 <button
                     className="absolute top-6 right-8 text-white text-3xl font-bold bg-black/40 rounded-full px-3 py-1 hover:bg-black/70 transition"
-                    onClick={() => setChatImagePreview(null)}
+                    onClick={() => actions.setChatImagePreview(null)}
                     aria-label="Close preview"
                 >
                     ×
@@ -120,7 +118,7 @@ export const Chat = ({ conversations, onSend }: ChatProps) => {
                                                     alt="uploaded"
                                                     className="my-2 rounded-lg border border-gray-200 cursor-pointer transition hover:brightness-90 object-contain max-w-full"
                                                     style={{ height: 'auto', maxHeight: '24rem', width: 'auto', maxWidth: '100%' }}
-                                                    onClick={() => setChatImagePreview(message.image || null)}
+                                                    onClick={() => actions.setChatImagePreview(message.image || null)}
                                                 />
                                             )}
                                             <div className="text-sm font-normal py-2.5 text-gray-900">
@@ -136,7 +134,7 @@ export const Chat = ({ conversations, onSend }: ChatProps) => {
                                     </div>
                                 );
                             })}
-                            {isTyping && (
+                            {state.isTyping && (
                                 <div className="flex items-start gap-2.5">
                                     <div className="w-8 h-8 rounded-full flex items-center justify-center bg-blue-100 text-2xl select-none" aria-label="AI avatar">
                                         🤖
@@ -162,13 +160,13 @@ export const Chat = ({ conversations, onSend }: ChatProps) => {
                     <div className="w-full flex flex-col gap-2 mt-4 pb-4 px-4">
                         <form className="flex gap-2 items-end w-full" onSubmit={handleSend}>
                             <div className="flex-1 flex flex-col gap-2">
-                                {inputImagePreview && (
+                                {state.inputImagePreview && (
                                     <div className="mb-2 flex items-center gap-2 relative w-fit">
-                                        <img src={inputImagePreview} alt="preview" className="max-h-32 rounded-lg border border-gray-200" />
+                                        <img src={state.inputImagePreview} alt="preview" className="max-h-32 rounded-lg border border-gray-200" />
                                         <button
                                             type="button"
                                             className="absolute top-1 right-1 p-1 bg-white/80 rounded-full hover:bg-red-100 text-red-500 shadow"
-                                            onClick={() => setInputImagePreview(null)}
+                                            onClick={() => actions.setInputImagePreview(null)}
                                             aria-label="Remove image preview"
                                             style={{ lineHeight: 0 }}
                                         >
@@ -181,7 +179,7 @@ export const Chat = ({ conversations, onSend }: ChatProps) => {
                                         className="resize-none flex-1 min-h-[44px] max-h-40 rounded-lg border border-gray-300 px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-400 bg-white shadow-sm transition-all text-base placeholder-gray-400"
                                         style={{overflow: 'hidden'}}
                                         placeholder="Ask me anything..."
-                                        value={input}
+                                        value={state.input}
                                         onChange={handleInputChange}
                                         rows={1}
                                         onInput={e => {
@@ -193,7 +191,7 @@ export const Chat = ({ conversations, onSend }: ChatProps) => {
                                         onKeyDown={e => {
                                             if (e.key === 'Enter' && !e.shiftKey) {
                                                 e.preventDefault();
-                                                if (input.trim() || inputImagePreview) {
+                                                if (state.input.trim() || state.inputImagePreview) {
                                                     handleSend(e);
                                                 }
                                             }
@@ -203,7 +201,7 @@ export const Chat = ({ conversations, onSend }: ChatProps) => {
                                         {/* <SearchButton /> */}
                                         <UploadButton onFileSelect={handleFileSelect} />
                                     </div>
-                                    <SubmitButton disabled={!input.trim() && !inputImagePreview} />
+                                    <SubmitButton disabled={!state.input.trim() && !state.inputImagePreview} />
                                 </div>
                             </div>
                         </form>
