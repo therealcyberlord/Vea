@@ -1,8 +1,8 @@
 import { useState } from "react";
 import { v4 as uuidv4 } from 'uuid';
-import { Chat } from "../components/Chat";
-import type { ChatMessage, ChatHistory } from "../types/chat";
-import { callVeaAgent } from "../api/chat";
+import { Chat } from "@/components/Chat";
+import type { ChatMessage, ChatHistory } from "@/types/chat";
+import { callVeaAgent } from "@/api/chat";
 
 const initialHistory: ChatHistory = {
   messages: [],

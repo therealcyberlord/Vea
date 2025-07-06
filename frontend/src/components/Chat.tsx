@@ -1,10 +1,11 @@
-import type { ChatHistory } from "../types/chat";
+import type { ChatHistory } from "@/types/chat";
 import ReactMarkdown from 'react-markdown'
 import React, { useState } from "react";
-import { UploadButton } from "./UploadButton";
+import { UploadButton } from "@/components/UploadButton";
 import { X } from "react-feather";
-import { SubmitButton } from "./SubmitButton";
-import { NavBar } from "./NavBar";
+import { SubmitButton } from "@/components/SubmitButton";
+import { NavBar } from "@/components/NavBar";
+
 
 type ChatProps = {
     conversations: ChatHistory;

@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
-import { NavBar } from "../components/NavBar";
-import { getAvailableOllamaModels, updateModelConfig } from "../api/ollama";
+import { NavBar } from "@/components/NavBar";
+import { getAvailableOllamaModels, updateModelConfig } from "@/api/ollama";
 
 export default function ConfigureModels() {
   const [toolModels, setToolModels] = useState<string[]>([]);
