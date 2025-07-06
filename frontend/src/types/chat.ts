@@ -1,4 +1,4 @@
-export type ChatMessage = {
+export type Message = {
     id: string
     sender: 'user' | 'assistant'
     content: string;
@@ -8,5 +8,10 @@ export type ChatMessage = {
 }
 
 export type ChatHistory = {
-    messages: ChatMessage[];
+    messages: Message[];
+}
+
+export type MessagePayload = {
+    text: string;
+    image: string | null;
 }

@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { v4 as uuidv4 } from 'uuid';
 import { Chat } from "@/components/Chat";
-import type { ChatMessage, ChatHistory } from "@/types/chat";
+import type { Message, ChatHistory } from "@/types/chat";
 import { callVeaAgent } from "@/api/chat";
 
 const initialHistory: ChatHistory = {
@@ -14,7 +14,7 @@ export default function ChatPage() {
   // Handles sending a new message (now supports text and image)
   const handleSend = async (payload: { text: string; image: string | null }) => {
     if (!payload.text.trim() && !payload.image) return;
-    const userMsg: ChatMessage = {
+    const userMsg: Message = {
       id: uuidv4(),
       sender: "user",
       content: payload.text,
@@ -37,7 +37,7 @@ export default function ChatPage() {
       console.log("Agent response:", res);
 
       const content = res || "Sorry, I couldn't generate a response.";
-      const assistantMsg: ChatMessage = {
+      const assistantMsg: Message = {
         id: uuidv4(),
         sender: "assistant",
         content,
@@ -50,7 +50,7 @@ export default function ChatPage() {
       }));
     } catch (error) {
       console.log('Error calling agent:', error);
-      const errorMsg: ChatMessage = {
+      const errorMsg: Message = {
         id: uuidv4(),
         sender: "assistant",
         content: "Something went wrong. Please try agian.",
