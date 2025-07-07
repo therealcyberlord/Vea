@@ -1,25 +1,45 @@
+import { useMemo } from "react";
+import Select from "react-select";
 import { NavBar } from "@/components/NavBar";
 import { useModelConfig } from "@/hooks/useModelConfig";
-import Select from "react-select";
-import { useMemo } from "react";
+
+// ✅ Floating toast component
+function Toast({ message }: { message: string }) {
+  return (
+    <div className="fixed top-6 right-6 z-50 rounded-lg bg-green-100 text-green-800 px-4 py-3 text-sm shadow-lg border border-green-300">
+      {message}
+    </div>
+  );
+}
 
 export default function ConfigureModels() {
   const { state, actions } = useModelConfig();
 
-  const toolOptions = useMemo(() => state.toolModels.map((model) => ({
-    value: model,
-    label: model,
-  })), [state.toolModels]);
+  const toolOptions = useMemo(
+    () =>
+      state.toolModels.map((model) => ({
+        value: model,
+        label: model,
+      })),
+    [state.toolModels]
+  );
 
-  const visionOptions = useMemo(() => state.visionModels.map((model) => ({
-    value: model,
-    label: model,
-  })), [state.visionModels]);
+  const visionOptions = useMemo(
+    () =>
+      state.visionModels.map((model) => ({
+        value: model,
+        label: model,
+      })),
+    [state.visionModels]
+  );
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-100 to-blue-50 flex flex-col">
       <NavBar />
       <main className="flex-1 flex flex-col items-center justify-center py-12 px-4">
+        {/* ✅ Toast displayed on save */}
+        {state.saved && <Toast message="✅ Model configuration saved." />}
+
         <div className="w-full max-w-lg bg-white rounded-2xl shadow-xl border border-gray-200 p-8">
           <div className="flex items-center mb-6 gap-3">
             <img src="/ollama.svg" alt="Ollama Logo" className="w-8 h-8" />
@@ -82,12 +102,10 @@ export default function ConfigureModels() {
                 </div>
               </div>
 
-              {/* Error */}
               {state.error && (
                 <div className="text-red-600 text-sm mt-2">{state.error}</div>
               )}
 
-              {/* Submit */}
               <button
                 type="submit"
                 className={`w-full mt-4 py-3 rounded-lg font-semibold text-white transition-all ${
@@ -99,7 +117,7 @@ export default function ConfigureModels() {
                   !state.currToolModel || !state.currVisionModel || state.saving
                 }
               >
-                {state.saving ? "Saving..." : state.saved ? "Saved!" : "Save"}
+                {state.saving ? "Saving..." : "Save"}
               </button>
             </form>
           )}
