@@ -65,6 +65,9 @@ export const useModelConfig = () => {
     const fetchModels = async () => {
       try {
         const data = await getAvailableOllamaModels();
+        dispatch({type: ModelActionType.setCurrToolModel, payload: data.currToolModel});
+        dispatch({type: ModelActionType.setCurrVisionModel, payload: data.currVisionModel});
+        dispatch({ type: ModelActionType.setError, payload: null });
         dispatch({ type: ModelActionType.setToolModels, payload: data.tool || [] });
         dispatch({ type: ModelActionType.setVisionModels, payload: data.vision || [] });
       } catch {

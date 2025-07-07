@@ -26,6 +26,20 @@ class UpdateModelConfig(BaseModel):
     )
 
 
+class OllamaModelsResponse(BaseModel):
+    tool: list[str]
+    vision: list[str]
+    curr_tool_model: str | None = Field(
+        alias="currToolModel",
+        validation_alias=AliasChoices("currToolModel", "curr_tool_model"),
+    )
+    curr_vision_model: str | None = Field(
+        alias="currVisionModel",
+        validation_alias=AliasChoices("currVisionModel", "curr_vision_model"),
+    )
+    error: str | None = None
+
+
 app = FastAPI()
 
 origins = ["http://localhost:3000"]
@@ -82,7 +96,7 @@ async def call_vea_agent(body: ChatQuery):
 
 
 @app.get("/show-ollama-models/")
-def show_ollama_models():
+def show_ollama_models() -> OllamaModelsResponse:
     """Endpoint to show available Ollama models, we return a tuple of model names
     The first one is a list of available models compatible with tool-calling, the second is a list of available vision models.
     """
@@ -96,6 +110,13 @@ def show_ollama_models():
 
         tool_models = []
         vision_models = []
+        curr_tool_model = None
+        curr_vision_model = None
+
+        with open("config/agent.yaml", "r") as f:
+            agent_config = yaml.safe_load(f)
+            curr_tool_model = agent_config["llm_config"]["tool_llm"]["name"]
+            curr_vision_model = agent_config["llm_config"]["vision_llm"]["name"]
 
         for model_name in result:
             info = subprocess.run(
@@ -110,12 +131,20 @@ def show_ollama_models():
             if "vision" in info:
                 vision_models.append(model_name)
 
-        return {
-            "tool": tool_models,
-            "vision": vision_models,
-        }
+        return OllamaModelsResponse(
+            tool=tool_models,
+            vision=vision_models,
+            curr_tool_model=curr_tool_model,
+            curr_vision_model=curr_vision_model,
+        )
     except subprocess.CalledProcessError as e:
-        return {"error": str(e), "output": e.output}
+        return OllamaModelsResponse(
+            tool=[],
+            vision=[],
+            curr_tool_model=None,
+            curr_vision_model=None,
+            error=str(e),
+        )
 
 
 @app.post("/update-model-config/")
@@ -124,15 +153,15 @@ def update_model_config(body: UpdateModelConfig):
 
     # Load existing YAML config
     with open(config_path, "r") as f:
-        llm_config = yaml.safe_load(f)
+        agent_config = yaml.safe_load(f)
 
     # Update fields
-    llm_config["llm_config"]["tool_llm"]["name"] = body.tool_model
-    llm_config["llm_config"]["vision_llm"]["name"] = body.image_model
+    agent_config["llm_config"]["tool_llm"]["name"] = body.tool_model
+    agent_config["llm_config"]["vision_llm"]["name"] = body.image_model
 
     # Save updated YAML config
     with open(config_path, "w") as f:
-        yaml.dump(llm_config, f, default_flow_style=False)
+        yaml.dump(agent_config, f, default_flow_style=False)
 
     global agent
     agent = create_vea_agent()
