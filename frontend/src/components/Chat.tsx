@@ -33,9 +33,7 @@ export const Chat = ({ conversations, onSend }: ChatProps) => {
     if (!state.input.trim() && !state.inputImagePreview) return;
     const currentInput = state.input;
     const currentImage = state.inputImagePreview;
-    actions.setInput("");
-    actions.setInputImagePreview(null);
-    actions.setIsTyping(true);
+    actions.clearInputAndStartTyping();
     await onSend({ text: currentInput, image: currentImage });
     actions.setIsTyping(false);
   };
@@ -48,7 +46,7 @@ export const Chat = ({ conversations, onSend }: ChatProps) => {
         const file = item.getAsFile();
         if (file) {
           const reader = new FileReader();
-          reader.onload = (event) => {
+          reader.onload = event => {
             actions.setInputImagePreview(event.target?.result as string);
           };
           reader.readAsDataURL(file);

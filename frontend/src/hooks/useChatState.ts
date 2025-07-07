@@ -70,6 +70,12 @@ export const useChatState = () => {
     setError: useCallback((error: string | null) => {
         dispatch({ type: ChatActionType.setError, payload: error });
     }, []),
+
+    clearInputAndStartTyping: useCallback(() => {
+        dispatch({ type: ChatActionType.setInput, payload: "" });
+        dispatch({ type: ChatActionType.setInputImagePreview, payload: null });
+        dispatch({ type: ChatActionType.setIsTyping, payload: true });
+      }, []),
    }
 
    return { state, actions };
