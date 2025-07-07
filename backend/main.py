@@ -1,43 +1,10 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from pydantic import BaseModel, Field, AliasChoices
+from models.chat import ChatQuery
+from models.config import OllamaModelsResponse, UpdateModelConfig
 from agent import VeaAgent
 import subprocess
 import yaml
-
-
-class ChatQuery(BaseModel):
-    query: str
-    image_data: str = Field(
-        serialization_alias="imageData",
-        validation_alias=AliasChoices("imageData", "image_data"),
-        default="",
-    )
-
-
-class UpdateModelConfig(BaseModel):
-    tool_model: str = Field(
-        serialization_alias="toolModel",
-        validation_alias=AliasChoices("toolModel", "tool_model"),
-    )
-    image_model: str = Field(
-        serialization_alias="imageModel",
-        validation_alias=AliasChoices("imageModel", "image_model"),
-    )
-
-
-class OllamaModelsResponse(BaseModel):
-    tool: list[str]
-    vision: list[str]
-    curr_tool_model: str | None = Field(
-        alias="currToolModel",
-        validation_alias=AliasChoices("currToolModel", "curr_tool_model"),
-    )
-    curr_vision_model: str | None = Field(
-        alias="currVisionModel",
-        validation_alias=AliasChoices("currVisionModel", "curr_vision_model"),
-    )
-    error: str | None = None
 
 
 app = FastAPI()
