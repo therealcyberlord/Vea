@@ -1,7 +1,5 @@
 import ReactMarkdown from 'react-markdown';
-import type { ChatHistory } from "@/types/chat";
-
-type Message = ChatHistory['messages'][number];
+import type { Message } from "@/types/chat";
 
 type ChatMessageProps = {
   message: Message;
