@@ -1,7 +1,7 @@
 from pydantic import BaseModel, Field, AliasChoices
 
 
-class UpdateModelConfig(BaseModel):
+class ModelConfig(BaseModel):
     tool_model: str = Field(
         serialization_alias="toolModel",
         validation_alias=AliasChoices("toolModel", "tool_model"),
@@ -12,7 +12,7 @@ class UpdateModelConfig(BaseModel):
     )
 
 
-class OllamaModelsResponse(BaseModel):
+class ConfigResponse(BaseModel):
     tool: list[str]
     vision: list[str]
     curr_tool_model: str | None = Field(
