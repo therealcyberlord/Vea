@@ -1,12 +1,13 @@
 import type { ChatHistory } from "@/types/chat";
 import React from "react";
 import { UploadButton } from "@/components/UploadButton";
-import { X } from "react-feather";
 import { SubmitButton } from "@/components/SubmitButton";
 import { NavBar } from "@/components/NavBar";
 import { useChatState } from "@/hooks/useChatState";
 import { useFileReader } from "@/hooks/useFileReader";
 import { ChatMessage } from "@/components/Message";
+import { ImagePreview } from "@/components/QueryImagePreview";
+import { ImageModalPreview } from "@/components/ImageModalPreview";
 
 type ChatProps = {
   conversations: ChatHistory;
@@ -61,24 +62,10 @@ export const Chat = ({ conversations, onSend }: ChatProps) => {
   return (
     <>
       {state.chatImagePreview && (
-        <div
-          className="fixed inset-0 z-50 flex items-center justify-center bg-black/70"
-          onClick={() => actions.setChatImagePreview(null)}
-        >
-          <img
-            src={state.chatImagePreview}
-            alt="preview-large"
-            className="max-h-[90vh] max-w-[90vw] rounded-lg shadow-2xl border-4 border-white"
-            onClick={(e) => e.stopPropagation()}
-          />
-          <button
-            className="absolute top-6 right-8 text-white text-3xl font-bold bg-black/40 rounded-full px-3 py-1 hover:bg-black/70 transition"
-            onClick={() => actions.setChatImagePreview(null)}
-            aria-label="Close preview"
-          >
-            ×
-          </button>
-        </div>
+        <ImageModalPreview
+          src={state.chatImagePreview}
+          onClose={() => actions.setChatImagePreview(null)}
+        />
       )}
       <div className="fixed inset-0 bg-gray-100 flex flex-col items-center justify-center w-full h-full min-h-0 min-w-0">
         <div className="w-full h-full max-w-none flex flex-col">
@@ -139,26 +126,15 @@ export const Chat = ({ conversations, onSend }: ChatProps) => {
             <div className="w-full flex flex-col gap-2 mt-4 pb-4 px-4">
               <form className="flex gap-2 items-end w-full" onSubmit={handleSend}>
                 <div className="flex-1 flex flex-col gap-2">
-                  {state.inputImagePreview && (
-                    <div className="mb-2 flex items-center gap-2 relative w-fit">
-                      <img
-                        src={state.inputImagePreview}
-                        alt="preview"
-                        className="max-h-32 rounded-lg border border-gray-200"
-                      />
-                      <button
-                        type="button"
-                        className="absolute top-1 right-1 p-1 bg-white/80 rounded-full hover:bg-red-100 text-red-500 shadow"
-                        onClick={() => actions.setInputImagePreview(null)}
-                        aria-label="Remove image preview"
-                        style={{ lineHeight: 0 }}
-                      >
-                        <X size={16} />
-                      </button>
-                    </div>
-                  )}
-                  <div className="flex items-end gap-2 w-full">
-                    <textarea
+                {state.inputImagePreview && (
+                  <ImagePreview
+                    src={state.inputImagePreview}
+                    onRemove={() => actions.setInputImagePreview(null)}
+                  />
+                )}
+
+                <div className="flex items-end gap-2 w-full">
+                  <textarea
                       className="resize-none flex-1 min-h-[44px] max-h-40 rounded-lg border border-gray-300 px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-400 bg-white shadow-sm transition-all text-base placeholder-gray-400"
                       style={{ overflow: "hidden" }}
                       placeholder="Ask me anything..."
