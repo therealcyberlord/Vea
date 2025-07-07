@@ -5,3 +5,14 @@ export enum ChatActionType {
     setIsTyping = 'setIsTyping',
     setError = 'setError',
 }
+
+export enum ModelActionType {
+    setToolModels = 'setToolModels',
+    setVisionModels = 'setVisionModels',
+    setCurrToolModel = 'setCurrToolModel',
+    setCurrVisionModel = 'setCurrVisionModel',
+    setLoading = 'setLoading',
+    setSaving = 'setSaving',
+    setSaved = 'setSaved',
+    setError = 'setError',
+}

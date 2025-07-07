@@ -1,41 +1,20 @@
-import { useEffect, useState } from "react";
 import { NavBar } from "@/components/NavBar";
-import { getAvailableOllamaModels, updateModelConfig } from "@/api/ollama";
+import { useModelConfig } from "@/hooks/useModelConfig";
+import Select from "react-select";
+import { useMemo } from "react";
 
 export default function ConfigureModels() {
-  const [toolModels, setToolModels] = useState<string[]>([]);
-  const [visionModels, setVisionModels] = useState<string[]>([]);
-  const [chatModel, setChatModel] = useState<string>("");
-  const [imageModel, setImageModel] = useState<string>("");
-  const [loading, setLoading] = useState(true);
-  const [saving, setSaving] = useState(false);
-  const [saved, setSaved] = useState(false);
-  const [error, setError] = useState<string>("");
+  const { state, actions } = useModelConfig();
 
-  useEffect(() => {
-    getAvailableOllamaModels().then((data) => {
-      setToolModels(data.tool || []);
-      setVisionModels(data.vision || []);
-      setLoading(false);
-    });
-  }, []);
+  const toolOptions = useMemo(() => state.toolModels.map((model) => ({
+    value: model,
+    label: model,
+  })), [state.toolModels]);
 
-  const handleSave = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setSaving(true);
-    setSaved(false);
-    setError("");
-    try {
-      await updateModelConfig({ toolModel: chatModel, imageModel });
-      setSaving(false);
-      setSaved(true);
-      setTimeout(() => setSaved(false), 2000);
-    } catch (err) {
-      console.error("Error saving configuration:", err);
-      setSaving(false);
-      setError("Failed to save configuration, please double-check config/agent.yaml");
-    }
-  };
+  const visionOptions = useMemo(() => state.visionModels.map((model) => ({
+    value: model,
+    label: model,
+  })), [state.visionModels]);
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-100 to-blue-50 flex flex-col">
@@ -46,52 +25,81 @@ export default function ConfigureModels() {
             <img src="/ollama.svg" alt="Ollama Logo" className="w-8 h-8" />
             <h1 className="text-2xl font-bold tracking-tight text-gray-900">Ollama Model Settings</h1>
           </div>
-          <p className="text-gray-500 mb-8 text-sm">Configure which Ollama models are used for chat and image tasks. Your selections will be used for all future conversations.</p>
-          {loading ? (
-            <div className="flex items-center gap-2 text-gray-500"><span className="animate-spin h-5 w-5 border-2 border-blue-400 border-t-transparent rounded-full inline-block"></span> Loading models...</div>
+
+          <p className="text-gray-500 mb-8 text-sm">
+            Configure which Ollama models are used for chat and image tasks. Your selections will be used for all future conversations.
+          </p>
+
+          {state.loading ? (
+            <div className="flex items-center gap-2 text-gray-500">
+              <span className="animate-spin h-5 w-5 border-2 border-blue-400 border-t-transparent rounded-full inline-block"></span>
+              Loading models...
+            </div>
           ) : (
-            <form className="space-y-8" onSubmit={handleSave}>
+            <form className="space-y-8" onSubmit={actions.saveConfig}>
               <section>
                 <h2 className="text-lg font-semibold mb-2 text-gray-800 flex items-center gap-2">
                   <span role="img" aria-label="Chat">💬</span> Chat Model
                 </h2>
-                <select
-                  className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-400 focus:outline-none bg-gray-50 text-gray-900"
-                  value={chatModel}
-                  onChange={e => setChatModel(e.target.value)}
-                >
-                  <option value="">-- Select a model --</option>
-                  {toolModels.map((model) => (
-                    <option key={model} value={model}>{model}</option>
-                  ))}
-                </select>
+                <Select
+                  className="react-select-container"
+                  classNamePrefix="react-select"
+                  isDisabled={state.saving}
+                  placeholder="Select a model..."
+                  options={toolOptions}
+                  value={toolOptions.find(opt => opt.value === state.currToolModel) || null}
+                  onChange={opt => actions.setCurrToolModel(opt?.value || "")}
+                />
               </section>
+
               <section>
                 <h2 className="text-lg font-semibold mb-2 text-gray-800 flex items-center gap-2">
                   <span role="img" aria-label="Image">🖼️</span> Image Model
                 </h2>
-                <select
-                  className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-400 focus:outline-none bg-gray-50 text-gray-900"
-                  value={imageModel}
-                  onChange={e => setImageModel(e.target.value)}
-                >
-                  <option value="">-- Select a model --</option>
-                  {visionModels.map((model) => (
-                    <option key={model} value={model}>{model}</option>
-                  ))}
-                </select>
+                <Select
+                  className="react-select-container"
+                  classNamePrefix="react-select"
+                  isDisabled={state.saving}
+                  placeholder="Select a model..."
+                  options={visionOptions}
+                  value={visionOptions.find(opt => opt.value === state.currVisionModel) || null}
+                  onChange={opt => actions.setCurrVisionModel(opt?.value || "")}
+                />
               </section>
+
               <div className="bg-gray-50 rounded-lg p-4 mt-6 text-gray-700 text-sm border border-gray-100">
-                <div className="mb-1">Selected Chat Model: <span className="font-mono text-blue-700">{chatModel || "(none)"}</span></div>
-                <div>Selected Image Model: <span className="font-mono text-blue-700">{imageModel || "(none)"}</span></div>
+                <div className="mb-1">
+                  Selected Chat Model:{" "}
+                  <span className="font-mono text-blue-700">
+                    {state.currToolModel || "(none)"}
+                  </span>
+                </div>
+                <div>
+                  Selected Image Model:{" "}
+                  <span className="font-mono text-blue-700">
+                    {state.currVisionModel || "(none)"}
+                  </span>
+                </div>
               </div>
-              {error && <div className="text-red-600 text-sm mt-2">{error}</div>}
+
+              {/* Error */}
+              {state.error && (
+                <div className="text-red-600 text-sm mt-2">{state.error}</div>
+              )}
+
+              {/* Submit */}
               <button
                 type="submit"
-                className={`w-full mt-4 py-3 rounded-lg font-semibold text-white transition-all ${chatModel && imageModel ? 'bg-blue-600 hover:bg-blue-700' : 'bg-gray-300 cursor-not-allowed'}`}
-                disabled={!chatModel || !imageModel || saving}
+                className={`w-full mt-4 py-3 rounded-lg font-semibold text-white transition-all ${
+                  state.currToolModel && state.currVisionModel
+                    ? "bg-blue-600 hover:bg-blue-700"
+                    : "bg-gray-300 cursor-not-allowed"
+                }`}
+                disabled={
+                  !state.currToolModel || !state.currVisionModel || state.saving
+                }
               >
-                {saving ? 'Saving...' : saved ? 'Saved!' : 'Save'}
+                {state.saving ? "Saving..." : state.saved ? "Saved!" : "Save"}
               </button>
             </form>
           )}
