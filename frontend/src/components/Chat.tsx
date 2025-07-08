@@ -9,6 +9,7 @@ import { usePasteImage } from "@/hooks/usePaste";
 import { ChatMessage } from "@/components/Message";
 import { ImagePreview } from "@/components/QueryImagePreview";
 import { ImageModalPreview } from "@/components/ImageModalPreview";
+import { BubbleAnimation } from "./BubbleAnimation";
 
 type ChatProps = {
   conversations: ChatHistory;
@@ -88,20 +89,7 @@ export const Chat = ({ conversations, onSend }: ChatProps) => {
                           <span className="text-sm font-semibold text-gray-900">Vea AI</span>
                           <span className="text-sm font-normal text-gray-500">typing…</span>
                         </div>
-                        <div className="flex gap-1 mt-2 animate-pulse">
-                          <span
-                            className="block w-2 h-2 bg-blue-400 rounded-full animate-bounce"
-                            style={{ animationDelay: "0ms" }}
-                          ></span>
-                          <span
-                            className="block w-2 h-2 bg-blue-400 rounded-full animate-bounce"
-                            style={{ animationDelay: "150ms" }}
-                          ></span>
-                          <span
-                            className="block w-2 h-2 bg-blue-400 rounded-full animate-bounce"
-                            style={{ animationDelay: "300ms" }}
-                          ></span>
-                        </div>
+                        <BubbleAnimation />
                       </div>
                     </div>
                   )}
