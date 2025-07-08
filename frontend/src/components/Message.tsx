@@ -16,7 +16,7 @@ export const ChatMessage = ({ message, isAssistant, onImageClick }: ChatMessageP
       >
         {isAssistant ? '🤖' : '😀'}
       </div>
-      <div className={`flex flex-col w-fit max-w-3xl leading-1.5 p-4 border-gray-200 bg-gray-100 rounded-e-xl rounded-es-xl ${isAssistant ? '' : 'bg-blue-100 border-blue-200'}`}>
+      <div className={`flex flex-col w-fit max-w-full leading-1.5 p-4 border-gray-200 bg-gray-100 rounded-e-xl rounded-es-xl ${isAssistant ? '' : 'bg-blue-100 border-blue-200'}`}>
         <div className="flex items-center space-x-2">
           <span className="text-sm font-semibold text-gray-900">{isAssistant ? 'Vea AI' : 'You'}</span>
           <span className="text-sm font-normal text-gray-500">

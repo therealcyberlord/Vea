@@ -19,14 +19,10 @@ type ChatProps = {
 export const Chat = ({ conversations, onSend }: ChatProps) => {
   const { state, actions } = useChatState();
   const { readFile } = useFileReader();
-  const handlePasteImage = usePasteImage((dataUrl: string) => {
-    actions.setInputImagePreview(dataUrl);
-  });
+  const handlePasteImage = usePasteImage(actions.setInputImagePreview);
 
   const handleFileSelect = (file: File) => {
-    readFile(file).then((result: string) => {
-      actions.setInputImagePreview(result);
-    });
+    readFile(file).then(actions.setInputImagePreview);
   };
 
   const handleInputChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
