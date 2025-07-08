@@ -5,6 +5,7 @@ import { SubmitButton } from "@/components/SubmitButton";
 import { NavBar } from "@/components/NavBar";
 import { useChatState } from "@/hooks/useChatState";
 import { useFileReader } from "@/hooks/useFileReader";
+import { usePasteImage } from "@/hooks/usePaste";
 import { ChatMessage } from "@/components/Message";
 import { ImagePreview } from "@/components/QueryImagePreview";
 import { ImageModalPreview } from "@/components/ImageModalPreview";
@@ -17,6 +18,9 @@ type ChatProps = {
 export const Chat = ({ conversations, onSend }: ChatProps) => {
   const { state, actions } = useChatState();
   const { readFile } = useFileReader();
+  const handlePasteImage = usePasteImage((dataUrl: string) => {
+    actions.setInputImagePreview(dataUrl);
+  });
 
   const handleFileSelect = (file: File) => {
     readFile(file).then((result: string) => {
@@ -38,24 +42,7 @@ export const Chat = ({ conversations, onSend }: ChatProps) => {
     actions.setIsTyping(false);
   };
 
-  const handlePaste = (e: React.ClipboardEvent<HTMLTextAreaElement>) => {
-    const items = e.clipboardData.items;
-    for (let i = 0; i < items.length; i++) {
-      const item = items[i];
-      if (item.type.startsWith("image/")) {
-        const file = item.getAsFile();
-        if (file) {
-          const reader = new FileReader();
-          reader.onload = event => {
-            actions.setInputImagePreview(event.target?.result as string);
-          };
-          reader.readAsDataURL(file);
-        }
-        e.preventDefault();
-        break;
-      }
-    }
-  };
+  
 
   return (
     <>
@@ -144,7 +131,7 @@ export const Chat = ({ conversations, onSend }: ChatProps) => {
                         target.style.height = "auto";
                         target.style.height = target.scrollHeight + "px";
                       }}
-                      onPaste={handlePaste}
+                      onPaste={handlePasteImage}
                       onKeyDown={(e) => {
                         if (e.key === "Enter" && !e.shiftKey) {
                           e.preventDefault();
