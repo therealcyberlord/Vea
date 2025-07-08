@@ -1,9 +1,10 @@
-from fastapi import FastAPI
+from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from models.chat import ChatQuery
 from models.config import ConfigResponse, ModelConfig
 from utils.config import read_agent_config, update_agent_config
 from agent import VeaAgent
+import asyncio
 import subprocess
 
 
@@ -44,8 +45,22 @@ async def call_vea_agent(body: ChatQuery):
     return response
 
 
+async def get_model_info(name: str) -> tuple[str, str]:
+    proc = await asyncio.create_subprocess_exec(
+        "ollama",
+        "show",
+        name,
+        stdout=asyncio.subprocess.PIPE,
+        stderr=asyncio.subprocess.PIPE,
+    )
+    stdout, stderr = await proc.communicate()
+    if proc.returncode != 0:
+        raise RuntimeError(f"Failed to show model '{name}': {stderr.decode().strip()}")
+    return name, stdout.decode()
+
+
 @app.get("/show-ollama-models/")
-def show_ollama_models() -> ConfigResponse:
+async def show_ollama_models() -> ConfigResponse:
     """Endpoint to show available Ollama models, we return a tuple of model names
     The first one is a list of available models compatible with tool-calling, the second is a list of available vision models.
     """
@@ -55,7 +70,12 @@ def show_ollama_models() -> ConfigResponse:
             ["ollama", "list"], capture_output=True, text=True, check=True
         )
         result = result.stdout.splitlines()[1:]
-        result = [r.split(" ")[0] for r in result]
+        model_names = [r.split(" ")[0] for r in result]
+
+        # concurrent execution
+        show_results = await asyncio.gather(
+            *[get_model_info(name) for name in model_names]
+        )
 
         tool_models = []
         vision_models = []
@@ -64,14 +84,7 @@ def show_ollama_models() -> ConfigResponse:
         curr_tool_model_name = config.tool_model.split(":", 1)[1]
         curr_vision_model_name = config.image_model.split(":", 1)[1]
 
-        for model_name in result:
-            info = subprocess.run(
-                ["ollama", "show", model_name],
-                capture_output=True,
-                text=True,
-                check=True,
-            )
-            info = info.stdout
+        for model_name, info in show_results:
             if "tools" in info:
                 tool_models.append(model_name)
             if "vision" in info:
@@ -84,13 +97,9 @@ def show_ollama_models() -> ConfigResponse:
             curr_vision_model=curr_vision_model_name,
         )
     except subprocess.CalledProcessError as e:
-        return ConfigResponse(
-            tool=[],
-            vision=[],
-            curr_tool_model=None,
-            curr_vision_model=None,
-            error=str(e),
-        )
+        raise HTTPException(status_code=500, detail=f"Ollama list failed: {e.stderr}")
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
 
 
 @app.post("/update-model-config/")
