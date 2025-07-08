@@ -1,4 +1,6 @@
 import ReactMarkdown from 'react-markdown';
+import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter';
+import { cb } from 'react-syntax-highlighter/dist/esm/styles/prism';
 import type { Message } from "@/types/chat";
 
 type ChatMessageProps = {
@@ -37,7 +39,28 @@ export const ChatMessage = ({ message, isAssistant, onImageClick }: ChatMessageP
         <div className="text-sm font-normal py-2.5 text-gray-900">
           {isAssistant && message.type === 'markdown' ? (
             <div className="prose prose-blue prose-sm max-w-none">
-              <ReactMarkdown>{message.content}</ReactMarkdown>
+              <ReactMarkdown
+                components={{
+                  code({ node, inline, className, children, ...props }) {
+                    const match = /language-(\w+)/.exec(className || '');
+                    return !inline && match ? (
+                      <SyntaxHighlighter
+                        style={cb}
+                        language={match[1]}
+                        PreTag="div"
+                        children={String(children).replace(/\n$/, '')}
+                        {...props}
+                      />
+                    ) : (
+                      <code className={className} {...props}>
+                        {children}
+                      </code>
+                    );
+                  },
+                }}
+              >
+                {message.content}
+              </ReactMarkdown>
             </div>
           ) : (
             <span className="whitespace-pre-line">{message.content}</span>
