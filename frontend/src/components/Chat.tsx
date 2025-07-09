@@ -55,11 +55,10 @@ export const Chat = ({ conversations, onSend }: ChatProps) => {
             <NavBar />
             <div className="flex-1 overflow-y-auto px-4 md:px-6 py-6 space-y-6 bg-gradient-to-b from-gray-50 to-white">
               {conversations.messages.length === 0 ? (
-                <div className="flex flex-col items-center justify-center h-full text-center py-12">
-                  <h3 className="text-xl font-medium text-gray-700 mb-2">Welcome 👋</h3>
-                  <p className="text-gray-500 max-w-md">
-                    Ask a question or start a conversation with Vea AI. You can also upload images for analysis or
-                    discussion.
+                  <div className="flex flex-col items-center justify-center h-full text-center py-16 px-4 sm:px-6 lg:px-8 max-w-xl mx-auto">
+                  <h3 className="text-2xl font-semibold text-gray-800 mb-4">Welcome 👋</h3>
+                  <p className="text-gray-600 text-base sm:text-lg leading-relaxed max-w-md">
+                    Ask a question or start a conversation with <span className="font-semibold text-indigo-600">Vea AI</span>. You can also upload images for analysis or discussion.
                   </p>
                 </div>
               ) : (
