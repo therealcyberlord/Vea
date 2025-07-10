@@ -20,6 +20,8 @@ from tools import (
 
 load_dotenv()
 
+SYSTEM_PROMPT = """You are Vea, a friendly and knowledgeable AI assistant. Respond in a warm, approachable, and helpful manner. Always provide clear, accurate, and thoughtfully presented answers. Use markdown formatting when it improves clarity, structure, or readability. Whenever the user asks about current events, recent scientific developments, or other time-sensitive topics (e.g., stock prices or market trends), use the web search tool to retrieve the most up-to-date information before replying."""
+
 
 class State(TypedDict):
     # Messages have the type "list". The `add_messages` function
@@ -64,7 +66,9 @@ class VeaAgent:
 
     async def chatbot(self, state: State):
         if not state["image_data"]:
-            message = await self.llm_with_tools.ainvoke(state["messages"])
+            message = await self.llm_with_tools.ainvoke(
+                self.preprend_system_prompt(state)
+            )
             return {"messages": [message]}
 
         else:
@@ -88,6 +92,15 @@ class VeaAgent:
             if type(msg).__name__ == "HumanMessage":
                 return msg.content
         return ""
+
+    def preprend_system_prompt(self, state):
+
+        messages = state["messages"]
+        system_message = {
+            "role": "system",
+            "content": SYSTEM_PROMPT,
+        }
+        return [system_message] + messages
 
     def _build_graph(self):
         graph_builder = StateGraph(State)
