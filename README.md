@@ -136,7 +136,7 @@ It also supports coding examples with markdown:
 
 ![Coding Example](images/coding-example.png)
 
-You can view the AI's thinking process:
+You can view the AI's thinking process if you are using a reasoning model:
 
 ![Thinking Trace](images/thinking-trace.png)
 
@@ -146,6 +146,10 @@ You can view the AI's thinking process:
 - Web search capabilities are subject to Tavily API's rate limits
 - Vision capabilities depend on the underlying model's capabilities
 - Temperature configuration functionality is currently a work-in-progress
+
+## Contributing
+
+Feel free to contribute to Vea! Whether it's adding new features, improving existing ones, or fixing bugs, your contributions are welcome. Please feel free to submit a pull request or open an issue for any enhancements you'd like to see.
 
 ## License
 
