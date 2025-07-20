@@ -28,6 +28,7 @@ Vea is a local AI copilot that seamlessly integrates with your Ollama installati
 - Multi-modal vision capabilities
 - Context-aware responses with current date/time integration
 - Modular architecture with LangGraph support and LangSmith observability
+- Support markdown for programming languages
 - Visible thinking traces when using a reasoning model
 
 ## Tech Stack
@@ -39,8 +40,6 @@ Vea is a local AI copilot that seamlessly integrates with your Ollama installati
 
 To install and run Vea, ensure you have the following:
 
-- Python 3.8 or higher
-- Node.js 16 or higher
 - Tavily API key
 - OpenWeather API key
 - Ollama installed and running
@@ -108,7 +107,10 @@ The application will be accessible at `http://localhost:3000`
 Vea/
 ├── backend/           # Backend implementation
 │   ├── agent/         # Main AI agent
-│   └── tools/         # AI tools and utilities
+│   └── tools/         # Tools for function-calling
+│   └── config/        # Configuration files
+│   └── utils/         # Utility functions
+│   └── models/        # Pydantic data models
 ├── frontend/          # Frontend application
 │   ├── src/           # TypeScript source code
 │   ├── public/        # Static assets
