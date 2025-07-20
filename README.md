@@ -118,6 +118,28 @@ Vea/
 └── .env               # Environment variables
 ```
 
+## Screenshots
+
+Here's a look at Vea's chat interface:
+
+![Landing Page](images/landing-page.png)
+
+The configuration page allows you to customize your models:
+
+![Configuration Page](images/config-page.png)
+
+Vea supports image inputs:
+
+![Image Question](images/image-question.png)
+
+It also supports coding examples with markdown:
+
+![Coding Example](images/coding-example.png)
+
+You can view the AI's thinking process:
+
+![Thinking Trace](images/thinking-trace.png)
+
 ## Limitations
 
 - Memory persistence is stored in-memory and is not persisted to an external database
