@@ -1,6 +1,6 @@
 llm_config:
   tool_llm:
-    name: smollm2:1.7b
+    name: qwen3:4b
     provider: ollama
     temperature: 0.3
   vision_llm:
