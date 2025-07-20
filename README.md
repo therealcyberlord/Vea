@@ -2,7 +2,7 @@
 
 [![License](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
 
-A local AI assistant that seamlessly integrates with your Ollama installations. Learn more about Ollama at [https://ollama.com/](https://ollama.com/).
+Learn more about Ollama at [https://ollama.com/](https://ollama.com/) for deploying LLMs locally
 
 ## Table of Contents
 
@@ -18,7 +18,7 @@ A local AI assistant that seamlessly integrates with your Ollama installations. 
 
 ## Overview
 
-Vea is a local AI copilot that seamlessly integrates with your Ollama installations. It provides a modern, web-based interface for interacting with local AI models while leveraging additional capabilities such as web search, mathematical operations, weather information, and image analysis. You can switch to closed-source models like OpenAI and Anthropic by editing the configuration file at `backend/config/agent.yaml`.
+Vea is a local AI copilot that seamlessly integrates with your Ollama installations. It provides a modern, web-based interface for interacting with local AI models while leveraging additional capabilities such as web search, mathematical operations, weather information, and image analysis. You can switch to closed-source models like OpenAI and Anthropic by editing the configuration file at `backend/config/agent.yaml`. Please edit the configuration file or complete the setup on the configuration page before submitting your first query.
 
 ## Features
 
@@ -57,7 +57,8 @@ cd Vea
 
 ```bash
 cd backend
-uv install
+uv sync
+source .venv/bin/activate
 ```
 
 3. Install frontend dependencies:
@@ -87,6 +88,7 @@ You can obtain API keys from:
 ## Usage
 
 1. Start the FastAPI backend server:
+
 ```bash
 cd backend
 uvicorn main:app --reload
