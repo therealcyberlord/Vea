@@ -35,14 +35,6 @@ Vea is a local AI copilot that seamlessly integrates with your Ollama installati
 - **Backend**: FastAPI, LangGraph, LangSmith, and Ollama
 - **Frontend**: React, TypeScript, TailwindCSS, and Vite
 
-## Setting Up Vite Project
-
-To create a new Vite project with TypeScript support:
-
-```bash
-npm create vite@latest frontend -- --template react-ts
-```
-
 ## Prerequisites
 
 To install and run Vea, ensure you have the following:
@@ -65,6 +57,7 @@ cd Vea
 2. Install Python dependencies using UV:
 
 ```bash
+cd backend
 uv install
 ```
 
@@ -82,12 +75,15 @@ Create a `.env` file in the root directory with the following configuration:
 ```
 TAVILY_API_KEY=your_tavily_api_key
 OPENWEATHER_API_KEY=your_openweather_api_key
+LANGSMITH_API_KEY=your_langsmith_api_key
+LANGSMITH_TRACE=true
 ```
 
 You can obtain API keys from:
 
 - Tavily API: https://tavily.com/
 - OpenWeather API: https://openweathermap.org/api
+- LangSmith: https://www.langchain.com/langsmith
 
 ## Usage
 
