@@ -36,13 +36,3 @@ def use_vision_llm(
     # Pass both messages to the model
     response = vlm.invoke([system_message, user_message])
     return response.text()
-
-
-# # read an image to base64
-# path = "langgraph_workflow.png"
-
-# with open(path, "rb") as image_file:
-#     encoded_string = base64.b64encode(image_file.read())
-
-# base64_str = encoded_string.decode("utf-8")
-# print(use_vision_llm(base64_str))  # This line is just for testing the function
