@@ -15,23 +15,26 @@ def fetch_weather_data(
     units: Literal["metric", "imperial"] = "metric",
 ) -> dict:
     """
-    Fetch weather data for a city with optional country/state specification. This provides the current weather conditions using the OpenWeatherMap API.
+    Fetches current weather data for a specified city using the OpenWeatherMap API. Optional country and state codes help disambiguate cities with the same name.
 
     Args:
-        city: City name
-        country: ISO 3166 country code (e.g., 'US', 'GB', 'CN')
-        state: State code for US cities (e.g., 'MA', 'CA')
-        units: Temperature units ('metric' for Celsius, 'imperial' for Fahrenheit), typically you should use 'metric'
-        unless specifically specified otherwise.
+        city (str): Name of the city.
+        country (str, optional): ISO 3166 country code (e.g., 'US', 'GB', 'CN').
+        state (str, optional): State code for US cities (e.g., 'MA', 'CA').
+        units (str, optional): Units for temperature. Use 'metric' for Celsius or 'imperial' for Fahrenheit. Default is 'metric'.
 
     Returns:
-        Weather data dictionary from OpenWeatherMap API
+        dict: Weather data returned from the OpenWeatherMap API.
+
+    Note:
+        Some cities share the same name across different countries or states. For example, "Cambridge" exists both in the United States and the United Kingdom as distinct cities.
 
     Examples:
         fetch_weather_data("Cambridge", "US", "MA")  # Cambridge, Massachusetts
-        fetch_weather_data("Cambridge", "GB")        # Cambridge, UK
-        fetch_weather_data("Cambridge,MA,US")        # Alternative format
+        fetch_weather_data("Cambridge", "GB")        # Cambridge, United Kingdom
+        fetch_weather_data("Cambridge,MA,US")        # Alternative single-string format
     """
+
     base_url = "http://api.openweathermap.org/data/2.5/weather"
 
     # Build the query string based on provided parameters
@@ -52,7 +55,7 @@ def fetch_weather_data(
 
     try:
         response = requests.get(base_url, params=params)
-        response.raise_for_status()  # Raises exception for HTTP errors
+        response.raise_for_status()
         return response.json()
     except requests.exceptions.RequestException as e:
         return {"error": f"Request failed: {e}"}

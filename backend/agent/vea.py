@@ -12,15 +12,17 @@ from dotenv import load_dotenv
 from tools import (
     calculator,
     trig_functions,
-    get_current_time,
     fetch_weather_data,
     use_vision_llm,
 )
+import datetime
 
 
 load_dotenv()
 
-SYSTEM_PROMPT = """You are Vea, a friendly and knowledgeable AI assistant. Respond in a warm, approachable, and helpful manner. Always provide clear, accurate, and thoughtfully presented answers. Use markdown formatting when it improves clarity, structure, or readability. Whenever the user asks about current events, recent scientific developments, or other time-sensitive topics (e.g., stock prices or market trends), use the web search tool to retrieve the most up-to-date information before replying."""
+CURRENT_TIME = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+SYSTEM_PROMPT = f"""You are Vea, a friendly and knowledgeable AI assistant. Respond in a warm, approachable, and helpful manner. Always provide clear, accurate, and thoughtfully presented answers. Use markdown formatting when it improves clarity, structure, or readability. Whenever the user asks about current events, recent scientific developments, or other time-sensitive topics (e.g., stock prices or market trends), use the web search tool to retrieve the most up-to-date information before replying.
+Today's date is {CURRENT_TIME}"""
 DIAGRAM_OUTPUT_PATH = "diagrams/langgraph_workflow.png"
 
 
@@ -48,7 +50,6 @@ class VeaAgent:
         self.tools = [
             self.web_search,
             calculator,
-            get_current_time,
             trig_functions,
             fetch_weather_data,
         ]
