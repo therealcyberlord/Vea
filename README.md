@@ -70,7 +70,7 @@ npm install
 
 ## Configuration
 
-Create a `.env` file in the root directory with the following configuration:
+Create a `.env` file in the `backend` directory with the following configuration:
 
 ```
 TAVILY_API_KEY=your_tavily_api_key
@@ -109,15 +109,15 @@ The application will be accessible at `http://localhost:3000`
 Vea/
 ├── backend/           # Backend implementation
 │   ├── agent/         # Main AI agent
-│   └── tools/         # Tools for function-calling
-│   └── config/        # Configuration files
-│   └── utils/         # Utility functions
-│   └── models/        # Pydantic data models
+│   ├── tools/         # Tools for function-calling
+│   ├── config/        # Configuration files
+│   ├── utils/         # Utility functions
+│   ├── models/        # Pydantic data models
+│   └── .env           # Environment variables
 ├── frontend/          # Frontend application
 │   ├── src/           # TypeScript source code
 │   ├── public/        # Static assets
 │   └── vite.config.ts # Vite configuration
-└── .env               # Environment variables
 ```
 
 ## Screenshots
