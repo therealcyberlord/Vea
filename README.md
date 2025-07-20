@@ -1,4 +1,4 @@
-# Vea
+# Vea - Local AI Copilot 🤖
 
 [![License](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
 
@@ -86,10 +86,10 @@ You can obtain API keys from:
 
 ## Usage
 
-1. Start the backend server:
-
+1. Start the FastAPI backend server:
 ```bash
-uv run backend/agent/vea.py
+cd backend
+uvicorn main:app --reload
 ```
 
 2. Start the frontend development server:
@@ -143,9 +143,9 @@ You can view the AI's thinking process if you are using a reasoning model:
 ## Limitations
 
 - Memory persistence is stored in-memory and is not persisted to an external database
-- Web search capabilities are subject to Tavily API's rate limits
 - Vision capabilities depend on the underlying model's capabilities
 - Temperature configuration functionality is currently a work-in-progress
+- Better handling of long-term memory
 
 ## Contributing
 
