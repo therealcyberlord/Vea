@@ -1,6 +1,6 @@
 llm_config:
   tool_llm:
-    name: cogito:8b
+    name: smollm2:1.7b
     provider: ollama
     temperature: 0.3
   vision_llm:
