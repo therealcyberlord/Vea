@@ -1,6 +1,6 @@
 llm_config:
   tool_llm:
-    name: qwen3:4b
+    name: cogito:8b
     provider: ollama
     temperature: 0.3
   vision_llm:

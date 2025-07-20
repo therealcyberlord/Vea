@@ -21,6 +21,7 @@ from tools import (
 load_dotenv()
 
 SYSTEM_PROMPT = """You are Vea, a friendly and knowledgeable AI assistant. Respond in a warm, approachable, and helpful manner. Always provide clear, accurate, and thoughtfully presented answers. Use markdown formatting when it improves clarity, structure, or readability. Whenever the user asks about current events, recent scientific developments, or other time-sensitive topics (e.g., stock prices or market trends), use the web search tool to retrieve the most up-to-date information before replying."""
+DIAGRAM_OUTPUT_PATH = "diagrams/langgraph_workflow.png"
 
 
 class State(TypedDict):
@@ -34,9 +35,9 @@ class State(TypedDict):
 class VeaAgent:
     def __init__(
         self,
+        tool_model_name,
+        vision_model_name,
         thread_id: str = "1",
-        tool_model_name: str = "ollama:cogito:8b",
-        vision_model_name: str = "ollama:gemma3:4b",
     ):
         self.memory = MemorySaver()
         self.llm = init_chat_model(tool_model_name)
@@ -57,11 +58,11 @@ class VeaAgent:
         self.config = {"configurable": {"thread_id": thread_id}}
         self.graph = self._build_graph()
 
-        # check if langgraph_workflow.png exists, if not create it
-        if not os.path.exists("langgraph_workflow.png"):
+        # save a workflow graph, you can comment this out if you don't want to save the graph
+        if not os.path.exists(DIAGRAM_OUTPUT_PATH):
             img_bytes = self.graph.get_graph().draw_mermaid_png()
 
-            with open("langgraph_workflow.png", "wb") as f:
+            with open(DIAGRAM_OUTPUT_PATH, "wb") as f:
                 f.write(img_bytes)
 
     async def chatbot(self, state: State):
@@ -122,22 +123,3 @@ class VeaAgent:
         )
 
         return state["messages"][-1].content
-
-
-# if __name__ == "__main__":
-#     agent = VeaAgent()
-#     agent.graph.update_state(agent.config, {"force_tool_call": "web_search"})
-
-#     async def main():
-#         while True:
-#             try:
-#                 user_input = input("User: ")
-#                 if user_input.lower() in ["quit", "exit", "q"]:
-#                     print("Goodbye!")
-#                     break
-#                 responses = await agent.query(user_input)
-#                 print(responses)
-#             except Exception as e:
-#                 print(f"An error occurred: {e}")
-
-#     asyncio.run(main())

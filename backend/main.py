@@ -2,8 +2,8 @@ from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from models.chat import ChatQuery
 from models.config import ConfigResponse, ModelConfig
-from utils.config import read_agent_config, update_agent_config
-from agent import VeaAgent
+from utils.config import read_config, update_config
+from agent.create import create_vea_agent
 import asyncio
 import subprocess
 
@@ -19,29 +19,20 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
-
-
-def create_vea_agent():
-    """Creates an instance of Vea Agent"""
-    config = read_agent_config()
-
-    return VeaAgent(
-        tool_model_name=config.tool_model, vision_model_name=config.image_model
-    )
-
-
-agent = create_vea_agent()
+app.agent = None
 
 
 @app.post("/chat/")
 async def call_vea_agent(body: ChatQuery):
     """Endpoint to interact with the VeaAgent"""
+    if app.agent is None:
+        app.agent = create_vea_agent()
     if body.image_data:
-        agent.graph.update_state(agent.config, {"image_data": body.image_data})
+        app.agent.graph.update_state(app.agent.config, {"image_data": body.image_data})
     else:
-        agent.graph.update_state(agent.config, {"image_data": None})
+        app.agent.graph.update_state(app.agent.config, {"image_data": None})
 
-    response = await agent.query(body.query)
+    response = await app.agent.query(body.query)
     return response
 
 
@@ -64,7 +55,6 @@ async def show_ollama_models() -> ConfigResponse:
     """Endpoint to show available Ollama models, we return a tuple of model names
     The first one is a list of available models compatible with tool-calling, the second is a list of available vision models.
     """
-    # run ollama list
     try:
         result = subprocess.run(
             ["ollama", "list"], capture_output=True, text=True, check=True
@@ -80,7 +70,7 @@ async def show_ollama_models() -> ConfigResponse:
         tool_models = []
         vision_models = []
 
-        config = read_agent_config()
+        config = read_config()
         curr_tool_model_name = config.tool_model.split(":", 1)[1]
         curr_vision_model_name = config.image_model.split(":", 1)[1]
 
@@ -103,11 +93,9 @@ async def show_ollama_models() -> ConfigResponse:
 
 
 @app.post("/update-model-config/")
-def update_model_config(body: ModelConfig):
-    print(body.tool_model, body.image_model)
-    update_agent_config(body.tool_model, body.image_model)
-    global agent
-    agent = create_vea_agent()
+def update_model_config(body: ModelConfig) -> dict[str, str]:
+    update_config(body.tool_model, body.image_model)
+    app.agent = create_vea_agent()
     return {
         "message": "Model configuration updated and saved.",
     }
