@@ -1,9 +1,9 @@
 import { useMemo } from "react";
 import Select from "react-select";
 import { NavBar } from "@/components/NavBar";
+import { ToggleButton } from "@/components/ToggleButton";
 import { useModelConfig } from "@/hooks/useModelConfig";
 
-// ✅ Floating toast component
 function Toast({ message }: { message: string }) {
   return (
     <div className="fixed top-6 right-6 z-50 rounded-lg bg-green-100 text-green-800 px-4 py-3 text-sm shadow-lg border border-green-300">
@@ -87,6 +87,29 @@ export default function ConfigureModels() {
                 />
               </section>
 
+              <section>
+                <h2 className="text-lg font-semibold mb-4 text-gray-800 flex items-center gap-2">
+                  <span role="img" aria-label="Tools">🛠️</span> Tools
+                </h2>
+                <div className="space-y-4">
+                  <ToggleButton
+                    label="Web Search"
+                    checked={state.toolConfig.web_search}
+                    onChange={() => actions.toggleTool('web_search')}
+                  />
+                  <ToggleButton
+                    label="Weather"
+                    checked={state.toolConfig.weather}
+                    onChange={() => actions.toggleTool('weather')}
+                  />
+                  <ToggleButton
+                    label="Math"
+                    checked={state.toolConfig.math}
+                    onChange={() => actions.toggleTool('math')}
+                  />
+                </div>
+              </section>
+
               <div className="bg-gray-50 rounded-lg p-4 mt-6 text-gray-700 text-sm border border-gray-100">
                 <div className="mb-1">
                   Selected Chat Model:{" "}
@@ -94,10 +117,19 @@ export default function ConfigureModels() {
                     {state.currToolModel || "(none)"}
                   </span>
                 </div>
-                <div>
+                <div className="mb-1">
                   Selected Image Model:{" "}
                   <span className="font-mono text-blue-700">
                     {state.currVisionModel || "(none)"}
+                  </span>
+                </div>
+                <div className="mt-2 pt-2 border-t border-gray-200">
+                  <span className="font-medium">Enabled Tools:</span>{" "}
+                  <span className="font-mono text-blue-700">
+                    {Object.entries(state.toolConfig || {})
+                      .filter(([_key, enabled]) => enabled)
+                      .map(([tool]) => tool.replace('_', ' '))
+                      .join(', ') || "(none)"}
                   </span>
                 </div>
               </div>

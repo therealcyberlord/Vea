@@ -11,6 +11,7 @@ export enum ModelActionType {
     setVisionModels = 'setVisionModels',
     setCurrToolModel = 'setCurrToolModel',
     setCurrVisionModel = 'setCurrVisionModel',
+    toggleTool = 'toggleTool',
     setLoading = 'setLoading',
     setSaving = 'setSaving',
     setSaved = 'setSaved',
