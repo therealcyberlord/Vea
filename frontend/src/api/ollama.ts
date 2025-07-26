@@ -1,4 +1,4 @@
-import type { ToolConfig } from "@/hooks/useModelConfig";
+import type { ToolConfig } from "@/types/config";
 
 export const getAvailableOllamaModels = async () => {
     const response = await fetch('http://127.0.0.1:8000/show-ollama-models', {

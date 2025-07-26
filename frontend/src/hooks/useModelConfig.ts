@@ -1,12 +1,7 @@
 import { useEffect, useReducer, useCallback } from 'react';
 import { getAvailableOllamaModels, updateModelConfig } from '@/api/ollama';
 import { ModelActionType } from '@/enums/chat';
-
-export type ToolConfig = {
-  web_search: boolean;
-  weather: boolean;
-  math: boolean;
-};
+import type { ToolConfig } from '@/types/config';
 
 type ConfigState = {
   toolModels: string[];
@@ -122,6 +117,7 @@ export const useModelConfig = () => {
       await updateModelConfig({
         toolModel: state.currToolModel,
         imageModel: state.currVisionModel,
+        toolConfig: state.toolConfig,
       });
       dispatch({ type: ModelActionType.setSaved, payload: true });
     } catch (err) {
@@ -136,7 +132,7 @@ export const useModelConfig = () => {
         dispatch({ type: ModelActionType.setSaved, payload: false });
       }, 2000);
     }
-  }, [state.currToolModel, state.currVisionModel]);
+  }, [state.currToolModel, state.currVisionModel, state.toolConfig]);
 
   return {
     state,
