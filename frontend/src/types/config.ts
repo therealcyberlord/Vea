@@ -1,5 +1,1 @@
-export type ToolConfig = {
-    web_search: boolean;
-    weather: boolean;
-    math: boolean;
-  };
+export type ToolsConfig = Record<string, boolean>;

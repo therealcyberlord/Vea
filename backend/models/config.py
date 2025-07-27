@@ -10,6 +10,10 @@ class ModelConfig(BaseModel):
         serialization_alias="imageModel",
         validation_alias=AliasChoices("imageModel", "image_model"),
     )
+    tools_config: dict[str, bool] = Field(
+        serialization_alias="toolsConfig",
+        validation_alias=AliasChoices("toolsConfig", "tools_config"),
+    )
 
 
 class ConfigResponse(BaseModel):
@@ -22,5 +26,9 @@ class ConfigResponse(BaseModel):
     curr_vision_model: str | None = Field(
         alias="currVisionModel",
         validation_alias=AliasChoices("currVisionModel", "curr_vision_model"),
+    )
+    tools_config: dict[str, bool] = Field(
+        alias="toolsConfig",
+        validation_alias=AliasChoices("toolsConfig", "tools_config"),
     )
     error: str | None = None

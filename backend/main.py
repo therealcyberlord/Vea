@@ -85,6 +85,7 @@ async def show_ollama_models() -> ConfigResponse:
             vision=vision_models,
             curr_tool_model=curr_tool_model_name,
             curr_vision_model=curr_vision_model_name,
+            tools_config=config.tools_config,
         )
     except subprocess.CalledProcessError as e:
         raise HTTPException(status_code=500, detail=f"Ollama list failed: {e.stderr}")
@@ -94,7 +95,7 @@ async def show_ollama_models() -> ConfigResponse:
 
 @app.post("/update-model-config/")
 def update_model_config(body: ModelConfig) -> dict[str, str]:
-    update_config(body.tool_model, body.image_model)
+    update_config(body.tool_model, body.image_model, body.tools_config)
     app.agent = create_vea_agent()
     return {
         "message": "Model configuration updated and saved.",

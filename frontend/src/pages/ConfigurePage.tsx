@@ -95,44 +95,20 @@ export default function ConfigureModels() {
                   <ToggleButton
                     label="Web Search"
                     checked={state.toolConfig.web_search}
-                    onChange={() => actions.toggleTool('web_search')}
+                    onChange={() => actions.toggleTool({...state.toolConfig, web_search: !state.toolConfig.web_search })}
                   />
                   <ToggleButton
                     label="Weather"
                     checked={state.toolConfig.weather}
-                    onChange={() => actions.toggleTool('weather')}
+                    onChange={() => actions.toggleTool({...state.toolConfig, weather: !state.toolConfig.weather })}
                   />
                   <ToggleButton
                     label="Math"
                     checked={state.toolConfig.math}
-                    onChange={() => actions.toggleTool('math')}
+                    onChange={() => actions.toggleTool({...state.toolConfig, math: !state.toolConfig.math })}
                   />
                 </div>
               </section>
-
-              <div className="bg-gray-50 rounded-lg p-4 mt-6 text-gray-700 text-sm border border-gray-100">
-                <div className="mb-1">
-                  Selected Chat Model:{" "}
-                  <span className="font-mono text-blue-700">
-                    {state.currToolModel || "(none)"}
-                  </span>
-                </div>
-                <div className="mb-1">
-                  Selected Image Model:{" "}
-                  <span className="font-mono text-blue-700">
-                    {state.currVisionModel || "(none)"}
-                  </span>
-                </div>
-                <div className="mt-2 pt-2 border-t border-gray-200">
-                  <span className="font-medium">Enabled Tools:</span>{" "}
-                  <span className="font-mono text-blue-700">
-                    {Object.entries(state.toolConfig || {})
-                      .filter(([_key, enabled]) => enabled)
-                      .map(([tool]) => tool.replace('_', ' '))
-                      .join(', ') || "(none)"}
-                  </span>
-                </div>
-              </div>
 
               {state.error && (
                 <div className="text-red-600 text-sm mt-2">{state.error}</div>
