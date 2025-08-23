@@ -53,6 +53,7 @@ class VeaAgent:
             self.tools.append(fetch_weather_data)
         if "math" in enabled_tools:
             self.tools.append(calculator)
+            self.tools.append(trig_functions)
 
         self.llm_with_tools = self.llm.bind_tools(self.tools)
         self.vision_model_name = vision_model_name
