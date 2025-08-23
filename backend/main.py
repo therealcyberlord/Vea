@@ -96,6 +96,8 @@ async def show_ollama_models() -> ConfigResponse:
 @app.post("/update-model-config/")
 def update_model_config(body: ModelConfig) -> dict[str, str]:
     update_config(body.tool_model, body.image_model, body.tools_config)
+
+    # create a new agent when configs is changed
     app.agent = create_vea_agent()
     return {
         "message": "Model configuration updated and saved.",

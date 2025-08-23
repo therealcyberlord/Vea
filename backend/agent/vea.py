@@ -37,6 +37,7 @@ class VeaAgent:
         tool_model_name,
         vision_model_name,
         thread_id: str = "1",
+        enabled_tools: list[str] = ["web_search", "weather", "math"],
     ):
         self.memory = MemorySaver()
         self.llm = init_chat_model(tool_model_name)
@@ -44,12 +45,15 @@ class VeaAgent:
             max_results=2, api_key=os.getenv("TAVILY_API_KEY")
         )
 
-        self.tools = [
-            self.web_search,
-            calculator,
-            trig_functions,
-            fetch_weather_data,
-        ]
+        # we add tools based on the enabled_tools list
+        self.tools = []
+        if "web_search" in enabled_tools:
+            self.tools.append(self.web_search)
+        if "weather" in enabled_tools:
+            self.tools.append(fetch_weather_data)
+        if "math" in enabled_tools:
+            self.tools.append(calculator)
+
         self.llm_with_tools = self.llm.bind_tools(self.tools)
         self.vision_model_name = vision_model_name
 

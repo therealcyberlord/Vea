@@ -1,6 +1,6 @@
 llm_config:
   tool_llm:
-    name: cogito:3b
+    name: qwen3:4b
     provider: ollama
     temperature: 0.3
   vision_llm:
@@ -9,5 +9,5 @@ llm_config:
     temperature: 0.2
 tools:
   web_search: false
-  weather: true
-  math: false
+  weather: false
+  math: true
