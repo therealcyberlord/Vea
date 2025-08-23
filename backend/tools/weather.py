@@ -6,7 +6,6 @@ from langchain_core.tools import tool
 
 load_dotenv()
 
-
 @tool("fetch_weather_data")
 def fetch_weather_data(
     city: str,
@@ -34,7 +33,6 @@ def fetch_weather_data(
         fetch_weather_data("Cambridge", "GB")        # Cambridge, United Kingdom
         fetch_weather_data("Cambridge,MA,US")        # Alternative single-string format
     """
-
     base_url = "http://api.openweathermap.org/data/2.5/weather"
 
     # Build the query string based on provided parameters
@@ -51,12 +49,17 @@ def fetch_weather_data(
         # Just city name (may be ambiguous)
         query = city
 
-    params = {"q": query, "appid": os.environ["OPENWEATHER_API_KEY"], "units": units}
+    params = {"q": query, "appid": os.environ.get("OPENWEATHER_API_KEY"), "units": units}
+    
+    # Check if API key is available
+    if not params["appid"]:
+        return {"error": "OPENWEATHER_API_KEY environment variable not set"}
 
     try:
         response = requests.get(base_url, params=params)
         response.raise_for_status()
-        return response.json()
+        data = response.json()
+        return data
     except requests.exceptions.RequestException as e:
         return {"error": f"Request failed: {e}"}
     except KeyError:
