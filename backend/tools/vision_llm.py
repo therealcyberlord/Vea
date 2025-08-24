@@ -33,6 +33,8 @@ def use_vision_llm(
             },
         ],
     }
+    
     # Pass both messages to the model
     response = vlm.invoke([system_message, user_message])
+    
     return response.text()

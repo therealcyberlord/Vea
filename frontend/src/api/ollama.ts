@@ -1,3 +1,5 @@
+import type { ToolsConfig } from "@/types/config";
+
 export const getAvailableOllamaModels = async () => {
     const response = await fetch('http://127.0.0.1:8000/show-ollama-models', {
         method: 'GET',
@@ -13,6 +15,7 @@ export const getAvailableOllamaModels = async () => {
 type ModelConfig = {
   toolModel: string;
   imageModel: string;
+  toolsConfig: ToolsConfig;
 }
 
 

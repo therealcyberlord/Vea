@@ -27,14 +27,12 @@ export default function ChatPage() {
     }));
 
     try {
-      console.log("image", payload.image);
       const agentInput = {
         query: payload.text,
         imageData: payload.image ? payload.image : "",
         webSearchEnabled: false, 
       }
       const res = await callVeaAgent(agentInput);
-      console.log("Agent response:", res);
 
       const content = res || "Sorry, I couldn't generate a response.";
       const assistantMsg: Message = {

@@ -1,9 +1,9 @@
 import { useMemo } from "react";
 import Select from "react-select";
 import { NavBar } from "@/components/NavBar";
+import { ToggleButton } from "@/components/ToggleButton";
 import { useModelConfig } from "@/hooks/useModelConfig";
 
-// ✅ Floating toast component
 function Toast({ message }: { message: string }) {
   return (
     <div className="fixed top-6 right-6 z-50 rounded-lg bg-green-100 text-green-800 px-4 py-3 text-sm shadow-lg border border-green-300">
@@ -87,20 +87,28 @@ export default function ConfigureModels() {
                 />
               </section>
 
-              <div className="bg-gray-50 rounded-lg p-4 mt-6 text-gray-700 text-sm border border-gray-100">
-                <div className="mb-1">
-                  Selected Chat Model:{" "}
-                  <span className="font-mono text-blue-700">
-                    {state.currToolModel || "(none)"}
-                  </span>
+              <section>
+                <h2 className="text-lg font-semibold mb-4 text-gray-800 flex items-center gap-2">
+                  <span role="img" aria-label="Tools">🛠️</span> Tools
+                </h2>
+                <div className="space-y-4">
+                  <ToggleButton
+                    label="Web Search"
+                    checked={state.toolConfig.web_search}
+                    onChange={() => actions.toggleTool({...state.toolConfig, web_search: !state.toolConfig.web_search })}
+                  />
+                  <ToggleButton
+                    label="Weather"
+                    checked={state.toolConfig.weather}
+                    onChange={() => actions.toggleTool({...state.toolConfig, weather: !state.toolConfig.weather })}
+                  />
+                  <ToggleButton
+                    label="Math"
+                    checked={state.toolConfig.math}
+                    onChange={() => actions.toggleTool({...state.toolConfig, math: !state.toolConfig.math })}
+                  />
                 </div>
-                <div>
-                  Selected Image Model:{" "}
-                  <span className="font-mono text-blue-700">
-                    {state.currVisionModel || "(none)"}
-                  </span>
-                </div>
-              </div>
+              </section>
 
               {state.error && (
                 <div className="text-red-600 text-sm mt-2">{state.error}</div>

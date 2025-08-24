@@ -1,5 +1,8 @@
+import logging
 from pydantic import BaseModel, Field, AliasChoices
 
+
+logger = logging.getLogger(__name__)
 
 class ModelConfig(BaseModel):
     tool_model: str = Field(
@@ -10,6 +13,15 @@ class ModelConfig(BaseModel):
         serialization_alias="imageModel",
         validation_alias=AliasChoices("imageModel", "image_model"),
     )
+    tools_config: dict[str, bool] = Field(
+        serialization_alias="toolsConfig",
+        validation_alias=AliasChoices("toolsConfig", "tools_config"),
+    )
+    
+    def __init__(self, **data):
+        super().__init__(**data)
+        logger.debug("ModelConfig created with tool_model: %s, image_model: %s", 
+                    self.tool_model, self.image_model)
 
 
 class ConfigResponse(BaseModel):
@@ -23,4 +35,13 @@ class ConfigResponse(BaseModel):
         alias="currVisionModel",
         validation_alias=AliasChoices("currVisionModel", "curr_vision_model"),
     )
+    tools_config: dict[str, bool] = Field(
+        alias="toolsConfig",
+        validation_alias=AliasChoices("toolsConfig", "tools_config"),
+    )
     error: str | None = None
+    
+    def __init__(self, **data):
+        super().__init__(**data)
+        logger.debug("ConfigResponse created with %d tool models and %d vision models", 
+                    len(self.tool), len(self.vision))

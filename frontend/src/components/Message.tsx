@@ -10,8 +10,8 @@ type ChatMessageProps = {
   onImageClick: (src: string) => void;
 };
 
-export const ChatMessage = ({ message, isAssistant, onImageClick }: ChatMessageProps) => {
 
+export const ChatMessage = ({ message, isAssistant, onImageClick }: ChatMessageProps) => {
 
   // Parse thinking content and main content
   const parseMessageContent = (content: string) => {
@@ -34,16 +34,17 @@ export const ChatMessage = ({ message, isAssistant, onImageClick }: ChatMessageP
   const renderMarkdownContent = (content: string) => (
     <ReactMarkdown
       components={{
-        code({ node, inline, className, children, ...props }) {
+        code({ className, children, ...props }) {
           const match = /language-(\w+)/.exec(className || '');
-          return !inline && match ? (
+          return match ? (
             <SyntaxHighlighter
               style={cb}
               language={match[1]}
               PreTag="div"
-              children={String(children).replace(/\n$/, '')}
               {...props}
-            />
+            >
+              {String(children).replace(/\n$/, '')}
+            </SyntaxHighlighter>
           ) : (
             <code className={className} {...props}>
               {children}

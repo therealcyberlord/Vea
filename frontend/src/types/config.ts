@@ -1,0 +1,1 @@
+export type ToolsConfig = Record<string, boolean>;

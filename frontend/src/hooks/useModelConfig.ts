@@ -1,12 +1,14 @@
 import { useEffect, useReducer, useCallback } from 'react';
 import { getAvailableOllamaModels, updateModelConfig } from '@/api/ollama';
 import { ModelActionType } from '@/enums/chat';
+import type { ToolsConfig } from '@/types/config';
 
 type ConfigState = {
   toolModels: string[];
   visionModels: string[];
   currToolModel: string;
   currVisionModel: string;
+  toolConfig: ToolsConfig;
   loading: boolean;
   saving: boolean;
   saved: boolean;
@@ -18,6 +20,7 @@ type ConfigAction =
   | { type: ModelActionType.setVisionModels; payload: string[] }
   | { type: ModelActionType.setCurrToolModel; payload: string }
   | { type: ModelActionType.setCurrVisionModel; payload: string }
+  | { type: ModelActionType.toggleTool; payload: ToolsConfig }
   | { type: ModelActionType.setLoading; payload: boolean }
   | { type: ModelActionType.setSaving; payload: boolean }
   | { type: ModelActionType.setSaved; payload: boolean }
@@ -28,6 +31,7 @@ const initialState: ConfigState = {
   visionModels: [],
   currToolModel: '',
   currVisionModel: '',
+  toolConfig: {},
   loading: true,
   saving: false,
   saved: false,
@@ -44,6 +48,11 @@ const configReducer = (state: ConfigState, action: ConfigAction): ConfigState =>
       return { ...state, currToolModel: action.payload };
     case ModelActionType.setCurrVisionModel:
       return { ...state, currVisionModel: action.payload };
+    case ModelActionType.toggleTool:
+      return {
+        ...state,
+        toolConfig: action.payload,
+      };
     case ModelActionType.setLoading:
       return { ...state, loading: action.payload };
     case ModelActionType.setSaving:
@@ -60,7 +69,7 @@ const configReducer = (state: ConfigState, action: ConfigAction): ConfigState =>
 export const useModelConfig = () => {
   const [state, dispatch] = useReducer(configReducer, initialState);
 
-  // Load models once
+  // Load models and config once      
   useEffect(() => {
     const fetchModels = async () => {
       try {
@@ -70,6 +79,7 @@ export const useModelConfig = () => {
         dispatch({ type: ModelActionType.setError, payload: null });
         dispatch({ type: ModelActionType.setToolModels, payload: data.tool || [] });
         dispatch({ type: ModelActionType.setVisionModels, payload: data.vision || [] });
+        dispatch({ type: ModelActionType.toggleTool, payload: data.toolsConfig || {} });
       } catch {
         dispatch({ type: ModelActionType.setError, payload: 'Failed to fetch model list.' });
       } finally {
@@ -88,6 +98,10 @@ export const useModelConfig = () => {
     dispatch({ type: ModelActionType.setCurrVisionModel, payload: val });
   }, []);
 
+  const toggleTool = useCallback((tool: ToolsConfig) => {
+    dispatch({ type: ModelActionType.toggleTool, payload: tool });
+  }, []);
+
   const saveConfig = useCallback(async (e: React.FormEvent) => {
     e.preventDefault();
     dispatch({ type: ModelActionType.setSaving, payload: true });
@@ -97,6 +111,7 @@ export const useModelConfig = () => {
       await updateModelConfig({
         toolModel: state.currToolModel,
         imageModel: state.currVisionModel,
+        toolsConfig: state.toolConfig,
       });
       dispatch({ type: ModelActionType.setSaved, payload: true });
     } catch (err) {
@@ -111,13 +126,14 @@ export const useModelConfig = () => {
         dispatch({ type: ModelActionType.setSaved, payload: false });
       }, 2000);
     }
-  }, [state.currToolModel, state.currVisionModel]);
+  }, [state.currToolModel, state.currVisionModel, state.toolConfig]);
 
   return {
     state,
     actions: {
       setCurrToolModel,
       setCurrVisionModel,
+      toggleTool,
       saveConfig,
     },
   };
