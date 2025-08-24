@@ -13,15 +13,17 @@ Learn more about Ollama at [https://ollama.com/](https://ollama.com/) for deploy
 - [Configuration](#configuration)
 - [Usage](#usage)
 - [Project Structure](#project-structure)
+- [Logging](#logging)
 - [Limitations](#limitations)
 - [License](#license)
 
 ## Overview
 
-Vea is a local AI copilot that seamlessly integrates with your Ollama installations. It provides a modern, web-based interface for interacting with local AI models while leveraging additional capabilities such as web search, mathematical operations, weather information, and image analysis. You can switch to closed-source models like OpenAI and Anthropic by editing the configuration file at `backend/config/agent.yaml`. Please edit the configuration file or complete the setup on the configuration page before submitting your first query.
+Vea is a local AI copilot that seamlessly integrates with your Ollama installations. It provides a modern, web-based interface for interacting with local AI models while leveraging additional capabilities such as web search, mathematical operations, weather information, and image analysis. You can switch to closed-source models like OpenAI and Anthropic by editing the configuration file at `backend/config/agent.yaml` or through the web-based configuration interface. Please complete the setup on the configuration page (accessible at `http://localhost:3000/configure`) before submitting your first query.
 
 ## Features
 
+- **Configurable Tools** - Enable/disable web search, weather, and math tools based on your needs
 - Web search capabilities powered by Tavily API
 - Real-time weather information using OpenWeather API
 - Mathematical calculations including arithmetic and trigonometric functions
@@ -30,6 +32,7 @@ Vea is a local AI copilot that seamlessly integrates with your Ollama installati
 - Modular architecture with LangGraph support and LangSmith observability
 - Support markdown for programming languages
 - Visible thinking traces when using a reasoning model
+- Web-based configuration interface for model and tool selection
 
 ## Tech Stack
 
@@ -84,6 +87,32 @@ You can obtain API keys from:
 - Tavily API: https://tavily.com/
 - OpenWeather API: https://openweathermap.org/api
 - LangSmith: https://www.langchain.com/langsmith
+
+### Tools Configuration
+
+Vea supports configurable tools that can be enabled or disabled based on your needs. The `backend/config/agent.yaml` file contains the following configuration:
+
+```yaml
+llm_config:
+  tool_llm:
+    name: qwen3:4b
+    provider: ollama
+    temperature: 0.3
+  vision_llm:
+    name: gemma3:12b
+    provider: ollama
+    temperature: 0.2
+tools:
+  web_search: false
+  weather: true
+  math: false
+```
+
+- **web_search**: Enable/disable web search capabilities (requires Tavily API key)
+- **weather**: Enable/disable weather information lookup (requires OpenWeather API key)
+- **math**: Enable/disable mathematical calculation tools
+
+You can also configure your models through the web interface at `http://localhost:3000/configure`.
 
 ## Usage
 
@@ -141,6 +170,17 @@ It also supports coding examples with markdown:
 You can view the AI's thinking process if you are using a reasoning model:
 
 ![Thinking Trace](images/thinking-trace.png)
+
+## Logging
+
+Vea implements comprehensive logging for both development and production environments:
+
+- **Console Output**: INFO level and above messages are displayed in the console
+- **File Logging**: Detailed DEBUG level logs are written to `app.log` with rotation
+- **Log Rotation**: Log files are automatically rotated when they reach 10MB, with up to 5 backup files
+- **Structured Format**: All logs follow the format: `timestamp - logger_name - level - message`
+
+The logging configuration can be customized by modifying `backend/config/logging.conf`.
 
 ## Limitations
 
