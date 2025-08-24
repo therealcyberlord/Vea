@@ -9,5 +9,5 @@ llm_config:
     temperature: 0.2
 tools:
   web_search: false
-  weather: false
-  math: true
+  weather: true
+  math: false

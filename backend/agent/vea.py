@@ -43,10 +43,13 @@ class VeaAgent:
         thread_id: str = "1",
         enabled_tools: list[str] = ["web_search", "weather", "math"],
     ):
-        logger.info("Initializing VeaAgent with tool_model: %s, vision_model: %s", 
-                   tool_model_name, vision_model_name)
+        logger.info(
+            "Initializing VeaAgent with tool_model: %s, vision_model: %s",
+            tool_model_name,
+            vision_model_name,
+        )
         logger.info("Enabled tools: %s", enabled_tools)
-        
+
         self.memory = MemorySaver()
         self.llm = init_chat_model(tool_model_name)
         self.web_search = TavilySearch(
@@ -116,7 +119,6 @@ class VeaAgent:
         return ""
 
     def preprend_system_prompt(self, state):
-        logger.debug("Prepending system prompt to messages")
         messages = state["messages"]
         system_message = {
             "role": "system",
@@ -134,7 +136,7 @@ class VeaAgent:
         graph_builder.add_conditional_edges("chatbot", tools_condition)
         graph_builder.add_edge("tools", "chatbot")
         graph_builder.add_edge(START, "chatbot")
-        
+
         graph = graph_builder.compile(checkpointer=self.memory)
         logger.info("LangGraph workflow built successfully")
         return graph
